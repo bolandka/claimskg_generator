@@ -21,6 +21,8 @@ from claimskg.generator.statistics import ClaimsKGStatistics
 from claimskg.reconciler import FactReconciler
 from claimskg.util import TypedCounter
 
+from claimskg.annotation import EntityFishingAnnotator
+
 logger = getLogger()
 
 _is_valid_url_regex = re.compile(
@@ -172,6 +174,8 @@ class ClaimsKGGenerator:
         self._namespace_manager.bind('base', self._claimskg_prefix, override=True)
 
         self.counter = TypedCounter()
+
+        self._annotator = EntityFishingAnnotator(api_uri='http://localhost:8090/service/')
 
         self._rdfs_prefix = rdflib.Namespace("http://www.w3.org/2000/01/rdf-schema#")
         self._namespace_manager.bind('rdfs', self._rdfs_prefix, override=False)
@@ -708,8 +712,25 @@ class ClaimsKGGenerator:
             self._graph.add(
                 (claim_review_instance, rdflib.term.URIRef(self._schema_prefix['reviewRating']), normalized))
 
+            
+            # Related entity-fishing-client-python entities:
+            #claim.claim
+            #claim.claim_entities = "" row['extra_entities_claimReview_claimReviewed'] != 
+
+            #claim.body
+            #claim.body_entities = ""
+            
+            #claim.tags
+            #claim.keyword_entities = ""
+            
+            #claim.author
+            #claim.author_entities = ""
+
+            #self.annotator = EntityFishingAnnotator(configuration.annotator_uri)
+
             # For claim review mentions
-            entities_json = row['extra_entities_claimReview_claimReviewed']  # type: str
+            entities_json = self._annotator().annotate(row['extra_entities_claimReview_claimReviewed'])  # type: str
+            #entities_json = row['extra_entities_claimReview_claimReviewed']  # type: str
             loaded_json = self._process_json(entities_json)
             if loaded_json:
                 for mention_entry in loaded_json:
