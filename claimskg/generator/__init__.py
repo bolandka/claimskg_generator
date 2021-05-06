@@ -522,14 +522,14 @@ class ClaimsKGGenerator:
         return original_rating, normalized_rating
 
     def _create_mention(self, mention_entry, claim: ClaimLogicalView, in_review):
-        rho_value = float(mention_entry['score'])
+        rho_value = float(mention_entry['confidence_score'])
         if rho_value > self._threshold:
 
-            text = mention_entry['text']
-            start = mention_entry['begin']
-            end = mention_entry['end']
-            entity_uri = mention_entry['entity'].replace(" ", "_")
-            categories = mention_entry['categories']
+            text = mention_entry['rawName']
+            start = mention_entry['offsetStart']
+            end = mention_entry['offsetEnd']
+            entity_uri = mention_entry['wikidataId']
+            categories = mention_entry['domains']
             if len(categories) > 0:
                 categories = categories[0].split(",")
 
@@ -570,7 +570,7 @@ class ClaimsKGGenerator:
 
     @staticmethod
     def _format_confidence_score(mention_entry):
-        value = float(mention_entry['score'])
+        value = float(mention_entry['confidence_score'])
         rounded_to_two_decimals = round(value, 2)
         return str(rounded_to_two_decimals)
 
@@ -729,7 +729,7 @@ class ClaimsKGGenerator:
             #self.annotator = EntityFishingAnnotator(configuration.annotator_uri)
 
             # For claim review mentions
-            entities_json = self._annotator.annotate(row['extra_entities_claimReview_claimReviewed'])  # type: str
+            entities_json = self._annotator.annotate(row['claimReview_claimReviewed'])  # type: str
             #entities_json = row['extra_entities_claimReview_claimReviewed']  # type: str
             loaded_json = self._process_json(entities_json)
             if loaded_json:
