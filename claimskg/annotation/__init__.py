@@ -1,5 +1,5 @@
 import json
-import logging
+import logging.config
 from abc import ABC, abstractmethod
 
 from nerd import nerd_client
@@ -20,7 +20,7 @@ class EntityFishingAnnotator(Annotator):
         self._api_uri = api_uri
         self._client = nerd_client.NerdClient(apiBase=self._api_uri)
 
-    def annotate(self, text, language="eng") -> str:
+    def annotate(self, text, language="en") -> str:
         """
         function that can use entity-fishing online: https://github.com/hirmeos/entity-fishing-client-python
         """
@@ -30,5 +30,5 @@ class EntityFishingAnnotator(Annotator):
             'disable_existing_loggers': True,
         })
 
-        response = self.client.disambiguate_text(text, language=language)
+        response = self._client.disambiguate_text(text, language=language)
         return json.dumps(response[0]['entities'])

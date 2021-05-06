@@ -729,7 +729,7 @@ class ClaimsKGGenerator:
             #self.annotator = EntityFishingAnnotator(configuration.annotator_uri)
 
             # For claim review mentions
-            entities_json = self._annotator().annotate(row['extra_entities_claimReview_claimReviewed'])  # type: str
+            entities_json = self._annotator.annotate(row['extra_entities_claimReview_claimReviewed'])  # type: str
             #entities_json = row['extra_entities_claimReview_claimReviewed']  # type: str
             loaded_json = self._process_json(entities_json)
             if loaded_json:
